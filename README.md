@@ -1,2 +1,2 @@
 # go-microservices
-sandbox for microservices in go
+A golang project with microservice architecture for software engineering project
