@@ -3,3 +3,4 @@ front-end/frontApp
 authentication-service/authApp
 project/db-data/postgres/*
 project/db-data/mongo/*
+logger-service/loggerApp

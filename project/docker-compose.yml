@@ -1,6 +1,7 @@
 version: "3"
 
 services:
+  
   broker-service:
     build:
       context: ./../broker-service
@@ -8,6 +9,15 @@ services:
     restart: always
     ports:
       - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+  
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    restart: always
     deploy:
       mode: replicated
       replicas: 1
