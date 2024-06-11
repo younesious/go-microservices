@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 )
 
@@ -52,9 +51,9 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 func (app *Config) authenticate(w http.ResponseWriter, a AuthPayload) {
 	jsonData, _ := json.MarshalIndent(a, "", "\t")
 
-	authServiceURL := fmt.Sprintf("http://%s/authenticate", "authentication-service")
+	// authServiceURL := fmt.Sprintf("http://%s/authenticate", "authentication-service")
 
-	request, err := http.NewRequest("POST", authServiceURL, bytes.NewBuffer(jsonData))
+	request, err := http.NewRequest("POST", "http://authentication-service:8083/authenticate", bytes.NewBuffer(jsonData))
 	request.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}

@@ -13,7 +13,7 @@ import (
 	"github.com/younesious/go-microservices/authentication/data"
 )
 
-const webPort = "8080"
+const webPort = "8083"
 
 type Config struct {
 	DB     *sql.DB
