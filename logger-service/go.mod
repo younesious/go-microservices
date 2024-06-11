@@ -2,7 +2,11 @@ module github.com/younesious/logger-service/log
 
 go 1.22.3
 
-require go.mongodb.org/mongo-driver v1.15.0
+require (
+	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/cors v1.2.1
+	go.mongodb.org/mongo-driver v1.15.0
+)
 
 require (
 	github.com/golang/snappy v0.0.1 // indirect
