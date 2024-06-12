@@ -28,7 +28,7 @@ type Config struct {
 func main() {
 	mongoClient, err := connectToMongo()
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Cannot connect ro MonogDB: %v", err)
 	}
 	client = mongoClient
 
@@ -37,7 +37,7 @@ func main() {
 
 	defer func() {
 		if err = client.Disconnect(ctx); err != nil {
-			panic(err)
+			log.Fatalf("Error disconnectiong from mongo: %V", err)
 		}
 	}()
 
@@ -46,6 +46,8 @@ func main() {
 	}
 
 	go app.serve()
+
+	select {}
 }
 
 func (app *Config) serve() {
@@ -58,7 +60,7 @@ func (app *Config) serve() {
 	fmt.Println("Starting logging web service on port", webPort)
 	err := srv.ListenAndServe()
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("error starting server: %V", err)
 	}
 }
 
