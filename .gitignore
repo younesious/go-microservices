@@ -5,3 +5,4 @@ project/db-data/postgres/*
 project/db-data/mongo/*
 logger-service/loggerApp
 mail-service/mailerApp
+project/db-data/*
