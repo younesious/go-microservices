@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/younesious/go-microservices/listener/event"
+
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -23,13 +25,23 @@ func main() {
 	log.Println("Listening for and consuming RabbitMQ messages...")
 
 	// create a new consumer
+	consumer, err := event.NewConsumer(rabbitConn)
+	if err != nil {
+		panic(err)
+	}
+
+	// consumer.Listen watches the queue and consumes events for all the provided topics.
+	err = consumer.Listen([]string{"log.INFO", "log.WARNING", "log.ERROR"})
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 func connect() (*amqp.Connection, error) {
 	var counts int64
 	var backOff = 1 * time.Second
 	var connection *amqp.Connection
-	var rabbitURL = "amqp://guest:guest@localhost"
+	var rabbitURL = "amqp://guest:guest@rabbitmq"
 
 	for {
 		c, err := amqp.Dial(rabbitURL)
@@ -39,6 +51,7 @@ func connect() (*amqp.Connection, error) {
 		} else {
 			connection = c
 			fmt.Println()
+			log.Println("connecting to RabbitMQ")
 			break
 		}
 
