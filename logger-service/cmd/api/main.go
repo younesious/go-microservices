@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
+	"net/rpc"
 	"time"
 
 	"github.com/younesious/logger-service/log/data"
@@ -45,11 +47,25 @@ func main() {
 		Models: data.New(client),
 	}
 
-	go app.serve()
+	// go app.serve()
 
+	err = rpc.Register(new(RPCServer))
+	go app.rpcListen()
+
+	srv := &http.Server{
+		Addr:    fmt.Sprintf(":%s", webPort),
+		Handler: app.routes(),
+	}
+
+	fmt.Println("Starting logging web service on port", webPort)
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Panic(err)
+	}
 	select {}
 }
 
+/*
 func (app *Config) serve() {
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
@@ -61,6 +77,25 @@ func (app *Config) serve() {
 	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatalf("error starting server: %V", err)
+	}
+}
+*/
+
+func (app *Config) rpcListen() error {
+	log.Println("Starting RPC server on port", rpcPort)
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%s", rpcPort))
+	if err != nil {
+		return err
+	}
+	defer listen.Close()
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			continue
+		}
+
+		go rpc.ServeConn(rpcConn)
 	}
 }
 
