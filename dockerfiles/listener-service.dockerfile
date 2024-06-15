@@ -1,6 +1,6 @@
 FROM alpine:latest
 RUN mkdir /app
 
-COPY listenerApp /app
+COPY listener-service/listenerApp /app
 
 CMD [ "/app/listenerApp" ]

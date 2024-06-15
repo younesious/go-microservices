@@ -4,8 +4,8 @@ services:
   
   broker-service:
     build:
-      context: ./../broker-service
-      dockerfile: ./../broker-service/broker-service.dockerfile
+      context: .
+      dockerfile: ./dockerfiles/broker-service.dockerfile
     restart: always
     ports:
       - "8080:8080"
@@ -15,8 +15,8 @@ services:
   
   logger-service:
     build:
-      context: ./../logger-service
-      dockerfile: ./../logger-service/logger-service.dockerfile
+      context: .
+      dockerfile: ./dockerfiles/logger-service.dockerfile
     restart: always
     deploy:
       mode: replicated
@@ -24,8 +24,8 @@ services:
   
   mail-service:
     build:
-      context: ./../mail-service
-      dockerfile: ./../mail-service/mail-service.dockerfile
+      context: .
+      dockerfile: ./dockerfiles/mail-service.dockerfile
     restart: always
     deploy:
       mode: replicated
@@ -42,8 +42,8 @@ services:
   
   authentication-service:
     build:
-      context: ./../authentication-service
-      dockerfile: ./../authentication-service/authentication-service.dockerfile
+      context: .
+      dockerfile: ./dockerfiles/authentication-service.dockerfile
     restart: always
     ports:
       - "8083:8083"
@@ -55,8 +55,8 @@ services:
 
   listener-service:
     build:
-      context: ./../listener-service
-      dockerfile: ./../listener-service/listener-service.dockerfile
+      context: .
+      dockerfile: ./dockerfiles/listener-service.dockerfile
     deploy:
       mode: replicated
       replicas: 1

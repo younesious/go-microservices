@@ -3,7 +3,7 @@ FROM alpine:latest
 RUN mkdir /app
 RUN mkdir /templates
 
-COPY mailerApp /app
-COPY templates /templates
+COPY mail-service/mailerApp /app
+COPY mail-service/templates /templates
 
 CMD ["/app/mailerApp"]
