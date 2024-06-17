@@ -55,7 +55,7 @@ push_dockerfiles: build_dockerfiles
 ## front_end_linux: builds linux executable for front end
 front_end_linux:
 	@echo "Building linux version of front end..."
-	cd front-end && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o frontendLinux ./cmd/web
+	cd front-end && env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ${FRONT_END_BINARY} ./cmd/web
 	@echo "Done!"
 
 ## build_auth: builds the authentication binary as a linux executable

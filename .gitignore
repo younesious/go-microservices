@@ -6,3 +6,5 @@ mail-service/mailerApp
 db-data/*
 listener-service/listenerApp
 front-end/frontendLinux
+caddy_config/*
+caddy_data/*
