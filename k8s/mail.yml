@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mail-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mail-service
+  template:
+    metadata:
+      labels:
+        app: mail-service
+    spec:
+      containers:
+      - name: mail-service
+        image: "younesious/mail-service:1.0.0"
+        env:
+          - name: MAIL_DOMAIN
+            value: "localhost"
+          - name: MAIL_HOST
+            value: "mailhog"
+          - name: MAIL_PORT
+            value: "1025"
+          - name: MAIL_ENCRYPTION
+            value: "none"
+          - name: MAIL_USERNAME
+            value: ""
+          - name: MAIL_PASSWORD
+            value: ""
+          - name: FROM_NAME
+            value: "Younes Mahmoudi"
+          - name: FROM_ADDRESS
+            value: "younesious80@gmail.com"
+        ports:
+          - containerPort: 8085
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mail-service
+spec:
+  selector:
+    app: mail-service
+  ports:
+    - protocol: TCP
+      port: 8085
+      targetPort: 8085
