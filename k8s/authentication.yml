@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentication-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentication-service
+  template:
+    metadata:
+      labels:
+        app: authentication-service
+    spec:
+      containers:
+      - name: authentication-service
+        image: "younesious/authentication-service:1.0.1"
+        env:
+          - name: DSN
+            value: "host=host.minikube.internal port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "500m"
+        ports:
+          - containerPort: 8083
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentication-service
+spec:
+  selector:
+    app: authentication-service
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083

@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
@@ -48,10 +47,14 @@ func render(w http.ResponseWriter, t string) {
 		BrokerURL string
 	}
 
+	/* this part for connecting with docker swarm
 	data.BrokerURL = os.Getenv("BOROKER_URL")
 	if data.BrokerURL == "" {
 		data.BrokerURL = "http://backend"
 	}
+	*/
+
+	data.BrokerURL = "http://10.98.195.35:8080" // replcae this address with address of broker-service svc in minikube
 
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
