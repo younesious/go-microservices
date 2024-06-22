@@ -9,11 +9,15 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/younesious/go-microservices/authentication/data"
 )
 
-const webPort = "8083"
+const (
+	webPort     = "8083"
+	metricsPort = "9090"
+)
 
 type Config struct {
 	DB     *sql.DB
@@ -33,6 +37,13 @@ func main() {
 		DB:     conn,
 		Models: data.New(conn),
 	}
+
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		log.Printf("Starting metrics server on port %s\n", metricsPort)
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", metricsPort), nil))
+	}()
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
