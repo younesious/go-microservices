@@ -12,15 +12,17 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/younesious/go-microservices/authentication/data"
-
+	"github.com/grafana/pyroscope-go"
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go/config"
+	"github.com/younesious/go-microservices/authentication/data"
 )
 
 const (
-	webPort     = "8083"
-	metricsPort = "9090"
+	webPort         = "8083"
+	metricsPort     = "9090"
+	jaegerAgentPort = "6831"
+	pyroscopePort   = "4040"
 )
 
 type Config struct {
@@ -42,31 +44,56 @@ func main() {
 		Models: data.New(conn),
 	}
 
-	go func() {
-		http.Handle("/metrics", promhttp.Handler())
-		log.Printf("Starting metrics server on port %s\n", metricsPort)
-		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", metricsPort), nil))
-	}()
-
-	tracer, closer := initJaeger("auth-service")
-	defer closer.Close()
-
-	profiler.Start(profiler.Config{
-		ApplicationName: "auth-service",
-		ServerAddress:   "http://pyroscope:4040",
-	})
+	go startMetricsServer()
+	go startJaegerTracer()
+	go startPyroscopeProfiler()
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
 	}
 
-	log.Printf("Starting authentication end service on port %s\n", webPort)
+	log.Printf("Starting authentication service on port %s\n", webPort)
 	err := srv.ListenAndServe()
 
 	if err != nil {
 		log.Panic(err)
 	}
+
+	select {} // Prevent the main function from exiting
+}
+
+func startMetricsServer() {
+	http.Handle("/metrics", promhttp.Handler())
+	log.Printf("Starting metrics server on port %s\n", metricsPort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", metricsPort), nil))
+}
+
+func startJaegerTracer() opentracing.Tracer {
+	tracer, closer := initJaeger("auth-service")
+	defer closer.Close()
+	return tracer
+}
+
+func startPyroscopeProfiler() {
+	pyroscope.Start(pyroscope.Config{
+		ApplicationName: "auth-service",
+		ServerAddress:   fmt.Sprintf("http://pyroscope:%s", pyroscopePort),
+		Logger:          pyroscope.StandardLogger,
+		ProfileTypes: []pyroscope.ProfileType{
+			pyroscope.ProfileCPU,
+			pyroscope.ProfileAllocObjects,
+			pyroscope.ProfileAllocSpace,
+			pyroscope.ProfileInuseObjects,
+			pyroscope.ProfileInuseSpace,
+			pyroscope.ProfileGoroutines,
+			pyroscope.ProfileMutexCount,
+			pyroscope.ProfileMutexDuration,
+			pyroscope.ProfileBlockCount,
+			pyroscope.ProfileBlockDuration,
+		},
+	})
+	select {} // Prevent the goroutine from exiting
 }
 
 func connectToDB() *sql.DB {
@@ -116,7 +143,7 @@ func initJaeger(service string) (opentracing.Tracer, io.Closer) {
 		},
 		Reporter: &config.ReporterConfig{
 			LogSpans:           true,
-			LocalAgentHostPort: "jaeger:6831",
+			LocalAgentHostPort: fmt.Sprintf("jaeger:%s", jaegerAgentPort),
 		},
 	}
 	tracer, closer, err := cfg.NewTracer()
