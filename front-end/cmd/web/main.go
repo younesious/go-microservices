@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -53,8 +54,10 @@ func render(w http.ResponseWriter, t string) {
 		data.BrokerURL = "http://backend"
 	}
 	*/
-
-	data.BrokerURL = "http://10.98.195.35:8080" // replcae this address with address of broker-service svc in minikube
+	data.BrokerURL = os.Getenv("BROKER_URL")
+	if data.BrokerURL == "" {
+		data.BrokerURL = "http://broker-service.info" // replcae this address with address of broker-service svc in minikube
+	}
 
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
