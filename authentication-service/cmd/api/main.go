@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/younesious/go-microservices/authentication/data"
+
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go/config"
 )
 
 const (
@@ -43,6 +47,9 @@ func main() {
 		log.Printf("Starting metrics server on port %s\n", metricsPort)
 		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", metricsPort), nil))
 	}()
+
+	tracer, closer := initJaeger("auth-service")
+	defer closer.Close()
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
@@ -93,4 +100,24 @@ func openDB(dsn string) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func initJaeger(service string) (opentracing.Tracer, io.Closer) {
+	cfg := config.Configuration{
+		ServiceName: service,
+		Sampler: &config.SamplerConfig{
+			Type:  "const",
+			Param: 1,
+		},
+		Reporter: &config.ReporterConfig{
+			LogSpans:           true,
+			LocalAgentHostPort: "jaeger:6831",
+		},
+	}
+	tracer, closer, err := cfg.NewTracer()
+	if err != nil {
+		log.Fatalf("cannot initialize Jaeger Tracer: %v", err)
+	}
+	opentracing.SetGlobalTracer(tracer)
+	return tracer, closer
 }
