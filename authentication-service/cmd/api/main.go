@@ -51,6 +51,11 @@ func main() {
 	tracer, closer := initJaeger("auth-service")
 	defer closer.Close()
 
+	profiler.Start(profiler.Config{
+		ApplicationName: "auth-service",
+		ServerAddress:   "http://pyroscope:4040",
+	})
+
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
 		Handler: app.routes(),
