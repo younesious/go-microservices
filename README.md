@@ -110,7 +110,7 @@ here is the complete list of `Make` commands:
 License
 -------
 
-This project is licensed under the MIT License - see the [LICENSE]([https://github.com/younesious/events/blob/master/LICENSE](https://github.com/younesious/go-microservices/blob/master/LICENSE)) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/younesious/go-microservices/blob/master/LICENSE) file for details.
 
 ### Contributing
 
