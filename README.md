@@ -4,7 +4,7 @@ Go Microservices Project
 About
 -----
 
-This project was designed with educational purposes for the final project of the IUST software engineering course and aims to cover a wide range of software engineering topics such as microservice architecture, communication between services (API protocols like JSON, RPC, and gRPC), software development platforms such as Kubernetes and Docker Swarm, test writing for the authentication-service in the `tests` branch, and monitoring tools such as Prometheus, Grafana, Jaeger, and Pyroscope should be reviewed.
+This project was designed with educational purposes for the final project of the IUST software engineering course and aims to cover a wide range of software engineering topics such as microservice architecture, communication between services (API architectures like REST, RPC, and gRPC), software development platforms such as Kubernetes and Docker Swarm, test writing for the authentication-service in the `tests` branch, and monitoring tools such as Prometheus, Grafana, Jaeger, and Pyroscope should be reviewed.
 
 Project Overview
 ----------------
