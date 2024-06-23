@@ -47,7 +47,6 @@ services:
     restart: always
     ports:
       - "8083:8083"
-      - "9090:9090"
     deploy:
       mode: replicated
       replicas: 1
@@ -130,7 +129,7 @@ services:
      - "9411:9411"
 
   pyroscope:
-    image: ghcr.io/pyroscope-io/pyroscope:latest
+    image: grafana/pyroscope
     ports:
      - "4040:4040"
 

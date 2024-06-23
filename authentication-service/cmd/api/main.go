@@ -20,7 +20,7 @@ import (
 
 const (
 	webPort         = "8083"
-	metricsPort     = "9090"
+	prometheusPort  = "9090"
 	jaegerAgentPort = "6831"
 	pyroscopePort   = "4040"
 )
@@ -60,24 +60,26 @@ func main() {
 		log.Panic(err)
 	}
 
-	select {} // Prevent the main function from exiting
+	select {}
 }
 
 func startMetricsServer() {
 	http.Handle("/metrics", promhttp.Handler())
-	log.Printf("Starting metrics server on port %s\n", metricsPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", metricsPort), nil))
+	err := http.ListenAndServe(fmt.Sprintf(":%s", prometheusPort), nil)
+	if err != nil {
+		log.Printf("Error starting metrics server: %v", err)
+	}
 }
 
 func startJaegerTracer() opentracing.Tracer {
-	tracer, closer := initJaeger("auth-service")
+	tracer, closer := initJaeger("authentication-service")
 	defer closer.Close()
 	return tracer
 }
 
 func startPyroscopeProfiler() {
 	pyroscope.Start(pyroscope.Config{
-		ApplicationName: "auth-service",
+		ApplicationName: "authentication-service",
 		ServerAddress:   fmt.Sprintf("http://pyroscope:%s", pyroscopePort),
 		Logger:          pyroscope.StandardLogger,
 		ProfileTypes: []pyroscope.ProfileType{
@@ -93,7 +95,6 @@ func startPyroscopeProfiler() {
 			pyroscope.ProfileBlockDuration,
 		},
 	})
-	select {} // Prevent the goroutine from exiting
 }
 
 func connectToDB() *sql.DB {

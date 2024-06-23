@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
+	// "os"
 )
 
 func main() {
@@ -48,18 +48,27 @@ func render(w http.ResponseWriter, t string) {
 		BrokerURL string
 	}
 
-	/* this part for connecting with docker swarm
-	data.BrokerURL = os.Getenv("BOROKER_URL")
-	if data.BrokerURL == "" {
-		data.BrokerURL = "http://backend"
-	}
+	/*
+		// comment out if you wanna use docker swarm
+		data.BrokerURL = os.Getenv("BOROKER_URL")
+		if data.BrokerURL == "" {
+			data.BrokerURL = "http://backend"
+		}
 	*/
-	data.BrokerURL = os.Getenv("BROKER_URL")
-	if data.BrokerURL == "" {
-		data.BrokerURL = "http://broker-service.info" // replcae this address with address of broker-service svc in minikube
-	}
+
+	/*
+		// comment out if you wanna use k8s
+		data.BrokerURL = os.Getenv("BROKER_URL")
+		if data.BrokerURL == "" {
+			data.BrokerURL = "http://broker-service.info" // replcae this address with address of broker-service svc in minikube
+		}
+	*/
+
+	// comment out if you wanna run on local or with docker-compose
+	data.BrokerURL = "http://localhost:8080"
 
 	if err := tmpl.Execute(w, data); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }
