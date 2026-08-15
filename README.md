@@ -1,3 +1,5 @@
+
+
 Go Microservices Project
 ========================
 
@@ -99,7 +101,7 @@ here is the complete list of `Make` commands:
   build_logger        builds the logger binary as a linux executable
   build_mail          builds the mail binary as a linux executable
   build_listener      builds the listener binary as a linux executable
-  build_front         builds the frone end binary
+  build_front         builds the front end binary
   start               starts the front end
   stop                stop the front end
   test                runs all tests
